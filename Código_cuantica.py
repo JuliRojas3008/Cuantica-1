@@ -1,0 +1,249 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Wed Oct 11 11:19:39 2023
+
+@author: RYZEN
+"""
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+
+#PUNTO B
+h_barra = 1
+m = 1
+w = 1
+
+
+#PUNTO C
+X = np.linspace(-5,5,1000)
+h = (5-(-5))/(len(X)-1)
+b = (h**2)/12
+#PUNTO D
+def V(x):
+    res = m*(w**2)*(x**2)/2
+    return res
+
+#PUNTO E 
+def R(x, e):
+    res = ((2*m)/(h_barra**2))*(V(x)-e)
+    return res
+
+def metodo_de_numerov(X,e):
+    Y = np.zeros(len(X))
+    Y[0] = 0
+    Y[1] = 1 * (10**-5)
+    i = 1
+    while (i+1) < len(X):
+        Y[i+1] = ((2*(1+(b*5*R(X[i], e)))*Y[i])-((1-(b*R(X[i-1], e)))*Y[i-1]))/(1-(b*R(X[i+1], e)))
+        i +=1 
+    Y = Y/np.sqrt(np.sum(Y**2)*h)
+    return Y
+
+#PUNTO F
+def valores_propios(X, e):
+    dE = 0.001
+    Y_e = metodo_de_numerov(X, e)
+    Y_de = metodo_de_numerov(X, e+dE)
+    res = Y_e[-1]/Y_de[-1]
+    return res
+
+def solucion(X):
+    
+    e = 0.498
+    i = 0
+    valores = []
+    funciones = []
+    while len(valores)< 6:
+        centinela = False
+        while not centinela:
+            Y = metodo_de_numerov(X, e)
+            Val = valores_propios(X, e)
+    
+            if Val < 0:
+                centinela = True
+            else:
+                e += 0.001
+            i +=1
+        valores += [e]
+        funciones += [Y]
+        e += 0.995
+    return funciones, valores
+
+#PUNTO G
+
+def solucion_g(X, E):
+    funciones = []
+    for e in E:
+        Y = metodo_de_numerov(X, e)
+        funciones += [Y]
+    return funciones
+
+
+Energias = [0.5, 1.5, 2.5, 3.5, 4.5, 5.5]
+
+funciones = solucion_g(X, Energias)  
+Y1 = funciones[0]
+Y2 = funciones[1]
+Y3 = funciones[2]
+Y4 = funciones[3]
+Y5= funciones[4]
+Y6 = funciones[5]
+
+
+fig=plt.figure(figsize=(5.25, 5.25)) 
+ax=fig.add_subplot(111)
+plt.plot(X,Y1/np.sqrt(np.sum(Y1**2)*h/1.66))
+plt.plot(X,Y2/np.sqrt(np.sum(Y2**2)*h/2.25))
+plt.plot(X,Y3/np.sqrt(np.sum(Y3**2)*h/2.5))
+plt.plot(X,Y4/np.sqrt(np.sum(Y4**2)*h/2.75))
+plt.plot(X,Y5/np.sqrt(np.sum(Y5**2)*h/2.85))
+plt.plot(X,Y6/np.sqrt(np.sum(Y6**2)*h/3))
+plt.title("Sin Calcular Energias")
+plt.xlabel('Distance [au]')
+plt.ylabel('Probability density function')
+plt.xlim(-5,5)
+plt.legend(Energias)
+
+#PUNTO H
+funciones, valores = solucion(X)  
+Y1 = funciones[0]
+Y2 = funciones[1]
+Y3 = funciones[2]
+Y4 = funciones[3]
+Y5= funciones[4]
+Y6 = funciones[5]
+
+Energias = [0.5, 1.5, 2.5, 3.5, 4.5, 5.5]
+
+fig=plt.figure(figsize=(5.25, 5.25)) 
+ax=fig.add_subplot(111)
+plt.plot(X,Y1/np.sqrt(np.sum(Y1**2)*h/1.66))
+plt.plot(X,Y2/np.sqrt(np.sum(Y2**2)*h/2.25))
+plt.plot(X,Y3/np.sqrt(np.sum(Y3**2)*h/2.5))
+plt.plot(X,Y4/np.sqrt(np.sum(Y4**2)*h/2.75))
+plt.plot(X,Y5/np.sqrt(np.sum(Y5**2)*h/2.85))
+plt.plot(X,Y6/np.sqrt(np.sum(Y6**2)*h/3))
+plt.title("Calculando Energias")
+plt.xlabel('Distance [au]')
+plt.ylabel('Probability density function')
+plt.xlim(-5,5)
+plt.legend(Energias)
+
+
+#PUNTO I
+
+Energias_I = [-9.51, -8.54, -7.62,-6.74,-5.89]
+x_min = -5
+x_max = 5
+N=1000
+X = np.linspace(x_min,x_max,N)
+h = (x_max-x_min)/(N-1)
+b = (h**2)/12
+
+def V_I(x):
+    res = -10 * np.exp(-(x**2)/20)
+    return res
+
+def R_I(x, e):
+    res = ((2*m)*(V_I(x)-e))/(h_barra**2)
+    return res
+
+def metodo_de_numerov_I(X,e):
+    Y = np.zeros(len(X))
+    Y[0] = 0
+    Y[1] = 1 * (10**-5)
+    i = 1
+    while (i+1) < len(X):
+        Y[i+1] = ((2*(1+(5*b*R_I(X[i],e)))*Y[i])-((1-(b*R_I(X[i-1],e)))*Y[i-1]))/(1-(b*R_I(X[i+1],e)))
+        i +=1 
+    Y = Y/np.sqrt(np.sum(Y**2)*h)
+    return Y
+
+def solucion_I(X, E):
+    funciones = []
+    for e in E:
+        Y = metodo_de_numerov_I(X, e)
+        funciones += [Y]
+    return funciones
+
+
+
+funciones_I = solucion_I(X, Energias_I)  
+Y1_I = funciones_I[0]
+Y2_I = funciones_I[1]
+Y3_I = funciones_I[2]
+Y4_I = funciones_I[3]
+Y5_I = funciones_I[4]
+
+fig=plt.figure(figsize=(5.25, 5.25)) 
+ax=fig.add_subplot(111)
+plt.plot(X,Y1_I)
+plt.plot(X,Y2_I)
+plt.plot(X,Y3_I)
+plt.plot(X,Y4_I)
+plt.plot(X,Y5_I)
+#plt.plot(X,Y3_I/np.sqrt(np.sum(Y3_I**2)*h/1))
+#plt.plot(X,Y4_I/np.sqrt(np.sum(Y4_I**2)*h/1))
+#plt.plot(X,Y5_I/np.sqrt(np.sum(Y5_I**2)*h/1))
+plt.title("Potencial Gaussiano")
+plt.xlabel('Distance [au]')
+plt.ylabel('Probability density function')
+plt.ylim(-1,1)
+plt.legend(Energias_I)
+
+
+#PUNTO J
+
+Energias_J = [-1.478, -0.163]
+x_min = -5
+x_max = 5
+N=1000
+X = np.linspace(x_min,x_max,N)
+h = (x_max-x_min)/(N-1)
+b = (h**2)/12
+
+def V_J(x):
+    res = -4/((1+(x**2))**2)
+    return res
+
+def R_J(x, e):
+    res = ((2*m)*(V_J(x)-e))/(h_barra**2)
+    return res
+
+def metodo_de_numerov_J(X,e):
+    Y = np.zeros(len(X))
+    Y[0] = 0
+    Y[1] = 1 * (10**-5)
+    i = 1
+    while (i+1) < len(X):
+        Y[i+1] = ((2*(1+(5*b*R_J(X[i],e)))*Y[i])-((1-(b*R_J(X[i-1],e)))*Y[i-1]))/(1-(b*R_J(X[i+1],e)))
+        i +=1 
+    Y = Y/np.sqrt(np.sum(Y**2)*h)
+    return Y
+
+def solucion_J(X, E):
+    funciones = []
+    for e in E:
+        Y = metodo_de_numerov_J(X, e)
+        funciones += [Y]
+    return funciones
+
+
+
+funciones_J = solucion_J(X, Energias_J)  
+Y1_J = funciones_J[0]
+Y2_J = funciones_J[1]
+
+fig=plt.figure(figsize=(5.25, 5.25)) 
+ax=fig.add_subplot(111)
+plt.plot(X,Y1_J)
+plt.plot(X,Y2_J)
+#plt.plot(X,Y3_I/np.sqrt(np.sum(Y3_I**2)*h/1))
+#plt.plot(X,Y4_I/np.sqrt(np.sum(Y4_I**2)*h/1))
+#plt.plot(X,Y5_I/np.sqrt(np.sum(Y5_I**2)*h/1))
+plt.title("Potencial Racional")
+plt.xlabel('Distance [au]')
+plt.ylabel('Probability density function')
+plt.ylim(-1,1)
+plt.legend(Energias_J)
